@@ -18,6 +18,7 @@ public class CharacterScript : MonoBehaviour
         //Projections:
         Vector3 f = Camera.main.transform.forward;
         f.y = 0.0f;
+        if (f == Vector3.zero) f = Camera.main.transform.up;
         f.Normalize();
 
         Vector3 r = Camera.main.transform.right;
@@ -30,15 +31,5 @@ public class CharacterScript : MonoBehaviour
                 r * moveValue.x + 
                 f * moveValue.y
             ));
-
-        //Vector2 axisValue = new Vector2(
-        //    Input.GetAxis("Horizontal"),
-        //    Input.GetAxis("Vertical"));
-        //if (moveValue != Vector2.zero)
-        //{
-        //    Debug.Log(moveValue);
-        //    Debug.Log(axisValue);
-        //    Debug.Log("---");
-        //}
     }
 }

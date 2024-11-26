@@ -22,7 +22,6 @@ public class CameraScript : MonoBehaviour
     private float minFpvDistance = 0.9f;
     private float maxFpvDistance = 9.0f;
     private bool isPos3;
-    private bool isFPV;
 
     void Start()
     {
@@ -30,7 +29,6 @@ public class CameraScript : MonoBehaviour
         cameraAngles0 = cameraAngles = this.transform.eulerAngles;
         character = GameObject.Find("Character").transform;
         r = this.transform.position - character.position;
-        isPos3 = isFPV = false;
     }
 
     void Update()
@@ -55,20 +53,20 @@ public class CameraScript : MonoBehaviour
                     if (rr <= minFpvDistance)
                     {
                         r *= 0.01f;
+                        GameState.isFpv = true;
                     }
                     else
                     {
                         r *= 1 - wheel.y / 10;
                     }
-                    isFPV = false;
                 }
                 else
                 {
                     if (wheel.y < 0)
                     {
                         r *= 100f;
+                        GameState.isFpv = false;
                     }
-                    isFPV = true;
                 }
             }
         }
@@ -80,22 +78,18 @@ public class CameraScript : MonoBehaviour
             {
                 cameraAngles.x += lookValue.y * Time.deltaTime * sensitivityV;
                 cameraAngles.y += lookValue.x * Time.deltaTime * sensitivityH;
-                if (isFPV)
-                {
-                    cameraAngles.x = Mathf.Clamp(cameraAngles.x, minVerticalAngleFPV, maxVerticalAngleFPV);
-                } 
-                else
-                {
-                    cameraAngles.x = Mathf.Clamp(cameraAngles.x, minVerticalAngle, maxVerticalAngle);
-                }
+                
+                cameraAngles.x = Mathf.Clamp(cameraAngles.x,
+                                            GameState.isFpv ? minVerticalAngleFPV : minVerticalAngle,
+                                            GameState.isFpv ? maxVerticalAngleFPV : maxVerticalAngle);
+                
                 this.transform.eulerAngles = cameraAngles;
-                this.transform.position = character.position +
+            }
+            this.transform.position = character.position +
                 Quaternion.Euler(
                     cameraAngles.x - cameraAngles0.x,
                     cameraAngles.y - cameraAngles0.y,
                     0) * r;
-            }
-            
         }
     }
 }
