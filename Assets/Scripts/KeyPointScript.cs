@@ -24,4 +24,18 @@ public class KeyPointScript : MonoBehaviour
             part = leftTime / timeout;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            GameState.collectedItems.Add("Key1" + keyPointName, part);
+            GameState.TriggerGameEvent("KeyPoint", new GameEvents.MessageEvent
+            {
+                message = "Знайдено ключ " + keyPointName,
+                data = part
+            });
+            Destroy(gameObject);
+        }
+    }
 }
