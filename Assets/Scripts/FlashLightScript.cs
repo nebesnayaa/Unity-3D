@@ -6,6 +6,10 @@ public class FlashLightScript : MonoBehaviour
     private Light lightSource;
     private float charge;
     private float worktime = 60.0f;
+    private AudioSource midSound;
+    private AudioSource lastSound;
+
+    public float chargeLevel => charge;
 
     void Start()
     {
@@ -16,6 +20,10 @@ public class FlashLightScript : MonoBehaviour
         }
         lightSource = GetComponent<Light>();
         charge = 1.0f;
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        midSound = audioSources[0];
+        lastSound = audioSources[1];
+        //GameState.Subscribe(OnBatteryEvent, "Battery");
     }
 
     void Update()
@@ -24,8 +32,18 @@ public class FlashLightScript : MonoBehaviour
 
         if (charge > 0 && !GameState.isDay)
         {
-            lightSource.intensity = charge;
+            lightSource.intensity = chargeLevel;
             charge -= Time.deltaTime / worktime;
+            if(charge <= 0.5f && charge >= 0.49f)
+            {
+                midSound.Play();
+                lightSource.intensity = 0;
+                
+            }
+            if (charge <= 0.10f && charge >= 0.09f)
+            {
+                lastSound.Play();
+            }
         }
 
         if (GameState.isFpv)
@@ -41,8 +59,21 @@ public class FlashLightScript : MonoBehaviour
         }
     }
 
-    public void RefillCharge()
+    //private void OnBatteryEvent(string eventName, object data)
+    //{
+    //    if(data is GameEvents.MessageEvent e)
+    //    {
+    //        charge += (float)e.data;
+    //    }
+    //}
+    
+    //private void OnDestroy(string eventName, object data)
+    //{
+    //    GameState.UnSubscribe(OnBatteryEvent, "Battery");
+    //}
+
+    public void RefillCharge(float chargeValue)
     {
-        charge = 1.0f;
+        charge = chargeValue;
     }
 }

@@ -6,6 +6,9 @@ public class LightScript : MonoBehaviour
     private Light[] daylights;
     private Light[] nightlights;
 
+    private AudioSource daySound;
+    private AudioSource nightSound;
+
     void Start()
     {
 
@@ -17,6 +20,10 @@ public class LightScript : MonoBehaviour
             .FindGameObjectsWithTag("NightLight")
             .Select(g => g.GetComponent<Light>())
             .ToArray();
+
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        daySound = audioSources[0];
+        nightSound = audioSources[1];
 
         SwitchLight();
     }
@@ -39,6 +46,16 @@ public class LightScript : MonoBehaviour
         foreach (Light light in nightlights)
         {
             light.enabled = !GameState.isDay;
+        }
+        if (GameState.isDay)
+        {
+            nightSound.Stop();
+            daySound.Play();
+        }
+        else
+        {
+            daySound.Stop();
+            nightSound.Play();
         }
     }
 }

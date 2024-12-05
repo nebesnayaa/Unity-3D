@@ -26,7 +26,7 @@ public class BatteryTimerImageScript : MonoBehaviour
     {
         if (batteryScript != null)
         {
-            image.fillAmount = batteryScript.part;
+            image.fillAmount = batteryScript.charge;
             image.color = new Color(
                 1 - image.fillAmount,
                 image.fillAmount,

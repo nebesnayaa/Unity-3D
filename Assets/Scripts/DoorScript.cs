@@ -7,6 +7,8 @@ public class DoorScript : MonoBehaviour
     private string requiredKey = "1";
     private float openingTime = 3.0f;
     private float timeout = 0f;
+    private AudioSource closedSound;
+    private AudioSource openingSound;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -20,6 +22,7 @@ public class DoorScript : MonoBehaviour
                         data = requiredKey
                     });
                 timeout = openingTime;
+                openingSound.Play();
             }
             else {
                 GameState.TriggerGameEvent("Door1", new GameEvents.MessageEvent
@@ -27,13 +30,16 @@ public class DoorScript : MonoBehaviour
                     message = "Необхідно знайти ключ " + requiredKey,
                     data = requiredKey
                 });
+                closedSound.Play();
             }
         }
     }
 
     void Start()
     {
-
+        AudioSource[] audioSources = GetComponents<AudioSource>(); 
+        closedSound = audioSources[0];
+        openingSound = audioSources[1];
     }
 
     void Update()
