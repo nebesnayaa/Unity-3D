@@ -74,6 +74,7 @@ public class ToastScript : MonoBehaviour
     {
         GameState.UnSubscribe(OnGameEvent);
     }
+
     private class ToastMessage
     {
         public string message { get; set; }

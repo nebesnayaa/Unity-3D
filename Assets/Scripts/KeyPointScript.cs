@@ -19,6 +19,8 @@ public class KeyPointScript : MonoBehaviour
         leftTime = timeout;
         part = 1.0f;
         collectSound = GetComponent<AudioSource>();
+
+        GameState.Subscribe(OnSoundsVolumeTrigger, "EffectsVolume");
     }
     
     void Update()
@@ -43,14 +45,27 @@ public class KeyPointScript : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             collectSound.Play();
-            GameState.collectedItems.Add("Key1" + keyPointName, part);
+            GameState.collectedItems.Add("Key" + keyPointName, part);
             GameState.TriggerGameEvent("KeyPoint", new GameEvents.MessageEvent
             {
                 message = "Знайдено ключ " + keyPointName,
                 data = part
             });
-            //Destroy(gameObject);
-            destroyTimeout = .8f;
+
+            destroyTimeout = .5f;
         }
+    }
+
+    private void OnSoundsVolumeTrigger(string eventName, object data)
+    {
+        if (eventName == "EffectsVolume")
+        {
+            collectSound.volume = (float)data;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameState.UnSubscribe(OnSoundsVolumeTrigger, "EffectsVolume");
     }
 }

@@ -8,10 +8,10 @@ public class LightScript : MonoBehaviour
 
     private AudioSource daySound;
     private AudioSource nightSound;
+    private AudioSource musicBack;
 
     void Start()
     {
-
         daylights = GameObject
             .FindGameObjectsWithTag("DayLight")
             .Select(g=> g.GetComponent<Light>())
@@ -24,7 +24,10 @@ public class LightScript : MonoBehaviour
         AudioSource[] audioSources = GetComponents<AudioSource>();
         daySound = audioSources[0];
         nightSound = audioSources[1];
-
+        musicBack = audioSources[2];
+        
+        GameState.Subscribe(OnAmbientVolumeTrigger, "AmbientVolume");
+        GameState.Subscribe(OnMusicVolumeTrigger, "MusicVolume");
         SwitchLight();
     }
 
@@ -33,6 +36,23 @@ public class LightScript : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.N)) 
         {
             SwitchLight();
+        }
+    }
+
+    private void OnAmbientVolumeTrigger(string eventName, object data)
+    {
+        if(eventName == "AmbientVolume")
+        {
+            daySound.volume = (float)data;
+            nightSound.volume = (float)data;
+        }
+    }
+
+    private void OnMusicVolumeTrigger(string eventName, object data)
+    {
+        if (eventName == "MusicVolume")
+        {
+            musicBack.volume = (float)data;
         }
     }
 
@@ -57,5 +77,11 @@ public class LightScript : MonoBehaviour
             daySound.Stop();
             nightSound.Play();
         }
+    }
+
+    private void OnDestroy()
+    {
+        GameState.UnSubscribe(OnAmbientVolumeTrigger, "AmbientVolume");
+        GameState.UnSubscribe(OnMusicVolumeTrigger, "MusicVolume");
     }
 }

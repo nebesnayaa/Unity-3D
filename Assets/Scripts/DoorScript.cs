@@ -10,21 +10,46 @@ public class DoorScript : MonoBehaviour
     private AudioSource closedSound;
     private AudioSource openingSound;
 
+    
+    void Start()
+    {
+        AudioSource[] audioSources = GetComponents<AudioSource>(); 
+        closedSound = audioSources[0];
+        openingSound = audioSources[1];
+
+        GameState.Subscribe(OnSoundsVolumeTrigger, "EffectsVolume");
+    }
+
+    void Update()
+    {
+        if (timeout > 0f)
+        {
+            transform.Translate(0, 0, -Time.deltaTime / openingTime);
+            timeout -= Time.deltaTime;
+        }
+        else if (timeout < 0f) 
+        {
+            GameObject.Destroy(this.gameObject);
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            if (GameState.collectedItems.ContainsKey("Key1" + requiredKey))
+            if (GameState.collectedItems.ContainsKey("Key" + requiredKey))
             {
-                GameState.TriggerGameEvent("Door1", 
-                    new GameEvents.MessageEvent { 
+                GameState.TriggerGameEvent("Door1",
+                    new GameEvents.MessageEvent
+                    {
                         message = "Двері відчиняються",
                         data = requiredKey
                     });
                 timeout = openingTime;
                 openingSound.Play();
             }
-            else {
+            else
+            {
                 GameState.TriggerGameEvent("Door1", new GameEvents.MessageEvent
                 {
                     message = "Необхідно знайти ключ " + requiredKey,
@@ -35,19 +60,16 @@ public class DoorScript : MonoBehaviour
         }
     }
 
-    void Start()
+    private void OnSoundsVolumeTrigger(string eventName, object data)
     {
-        AudioSource[] audioSources = GetComponents<AudioSource>(); 
-        closedSound = audioSources[0];
-        openingSound = audioSources[1];
-    }
-
-    void Update()
-    {
-        if (timeout > 0f)
+        if (eventName == "EffectsVolume")
         {
-            transform.Translate(0, 0, -Time.deltaTime / openingTime);
-            timeout -= Time.deltaTime;
+            openingSound.volume = (float)data;
+            closedSound.volume = (float)data;
         }
+    }
+    private void OnDestroy()
+    {
+        GameState.UnSubscribe(OnSoundsVolumeTrigger, "EffectsVolume");
     }
 }

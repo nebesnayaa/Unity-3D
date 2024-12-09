@@ -4,8 +4,6 @@ using UnityEngine;
 public class BatteryScript : MonoBehaviour
 {
     [SerializeField]
-    private string batteryName = "1";
-    [SerializeField]
     public float charge = 0.5f;
     [SerializeField]
     private bool isRandomCharge = false;
@@ -25,12 +23,14 @@ public class BatteryScript : MonoBehaviour
         leftTime = timeout;
         part = 1.0f;
         collectSound = GetComponent<AudioSource>();
-             
+        collectSound.volume = GameState.effectsVolume; //??? 
+
         GameObject flashlight = GameObject.Find("FlashLight");
         if (flashlight != null)
         {
             flashLightScript = flashlight.GetComponent<FlashLightScript>();
         }
+        GameState.Subscribe(OnSoundsVolumeTrigger, "EffectsVolume");
     }
 
     void Update()
@@ -55,10 +55,9 @@ public class BatteryScript : MonoBehaviour
     {
         if (isRandomCharge) charge = Random.Range(0.4f, 1.0f);
 
-        if (collision.gameObject.Equals(GameObject.Find("Character")))
+        if (collision.gameObject.CompareTag("Player"))
         {
             collectSound.Play();
-            GameState.collectedItems.Add("Battery" + batteryName, part);
             GameState.TriggerGameEvent($"Знайдено батарейку із зарядом {charge:F1}", new GameEvents.MessageEvent
             {
                 message = $"Знайдено батарейку із зарядом {charge:F1}",
@@ -66,24 +65,38 @@ public class BatteryScript : MonoBehaviour
             });
             flashLightScript.RefillCharge(charge);
 
-            //GameObject.Destroy(this.gameObject);
             destroyTimeout = .3f;
         }
     }
 
+    private void OnSoundsVolumeTrigger(string eventName, object data)
+    {
+        if (eventName == "EffectsVolume")
+        {
+            collectSound.volume = (float)data;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameState.UnSubscribe(OnSoundsVolumeTrigger, "EffectsVolume");
+    }
+
     //private void OnTriggerEnter(Collider other)
     //{
+    //    Debug.Log("Зіткнення");
     //    if (isRandomCharge) charge = Random.Range(0.3f, 1.0f);
 
     //    if (other.gameObject.CompareTag("Player"))
     //    {
+    //        collectSound.Play();
     //        GameState.TriggerGameEvent("Battery", new GameEvents.MessageEvent
     //        {
     //            message = $"Знайдено батарейку із зарядом {charge:F1}",
     //            data = charge
     //        });
 
-    //        //flashLightScript.RefillCharge();
+    //        flashLightScript.RefillCharge(charge);
 
     //        Destroy(gameObject);
     //    }

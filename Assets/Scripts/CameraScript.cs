@@ -7,8 +7,6 @@ public class CameraScript : MonoBehaviour
     private InputAction lookAction;
     private Vector3 cameraAngles, cameraAngles0;
     private Vector3 r;
-    private float sensitivityH = 10.0f;
-    private float sensitivityV = -5.0f;
 
     [SerializeField]
     private float minVerticalAngle;
@@ -76,8 +74,8 @@ public class CameraScript : MonoBehaviour
             Vector2 lookValue = lookAction.ReadValue<Vector2>();
             if (lookValue != Vector2.zero)
             {
-                cameraAngles.x += lookValue.y * Time.deltaTime * sensitivityV;
-                cameraAngles.y += lookValue.x * Time.deltaTime * sensitivityH;
+                cameraAngles.x += lookValue.y * Time.deltaTime * GameState.lookSensitivityY;
+                cameraAngles.y += lookValue.x * Time.deltaTime * GameState.lookSensitivityX;
                 
                 cameraAngles.x = Mathf.Clamp(cameraAngles.x,
                                             GameState.isFpv ? minVerticalAngleFPV : minVerticalAngle,
