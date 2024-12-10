@@ -21,7 +21,6 @@ public class KeyTimerImageScript : MonoBehaviour
         }
     }
 
-
     void Update()
     {
         if (keyPointScript != null)

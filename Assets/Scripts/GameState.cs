@@ -6,6 +6,8 @@ public class GameState
 {
     public static bool isDay { get; set; }
     public static bool isFpv { get; set; }
+    public static int room { get; set; } = 1;
+
     public static Dictionary<String, object> collectedItems { get; set; } = new();
 
     public static float effectsVolume { get; set; }
@@ -14,6 +16,8 @@ public class GameState
 
     public static float lookSensitivityX { get; set; } = 10.0f;
     public static float lookSensitivityY { get; set; } = -5.0f;
+
+    public static float minFpvDistance { get; set; } = 0.5f;
 
     #region Game events
     private const string broadcastKey = "Broadcast";

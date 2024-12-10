@@ -6,13 +6,14 @@ public class KeyPointScript : MonoBehaviour
     private string keyPointName = "1";
     [SerializeField]
     private float timeout = 2.0f;
-    private float leftTime;
+    [SerializeField]
+    private int room = -1;
 
-    public float part;
+    private float leftTime;
+    public float part { get; private set; }
 
     private AudioSource collectSound;
     private float destroyTimeout;
-
 
     void Start()
     {
@@ -25,7 +26,7 @@ public class KeyPointScript : MonoBehaviour
     
     void Update()
     {
-        if (leftTime > 0) { 
+        if (GameState.room == room && leftTime > 0) { 
             leftTime -= Time.deltaTime / timeout;
             if( leftTime < 0) leftTime = 0;
             part = leftTime / timeout;

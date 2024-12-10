@@ -23,7 +23,7 @@ public class BatteryScript : MonoBehaviour
         leftTime = timeout;
         part = 1.0f;
         collectSound = GetComponent<AudioSource>();
-        collectSound.volume = GameState.effectsVolume; //??? 
+        collectSound.volume = GameState.effectsVolume;
 
         GameObject flashlight = GameObject.Find("FlashLight");
         if (flashlight != null)
@@ -51,18 +51,19 @@ public class BatteryScript : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (isRandomCharge) charge = Random.Range(0.4f, 1.0f);
+        if (isRandomCharge) charge = Random.Range(0.3f, 1.0f);
 
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
             collectSound.Play();
-            GameState.TriggerGameEvent($"Знайдено батарейку із зарядом {charge:F1}", new GameEvents.MessageEvent
+            GameState.TriggerGameEvent("Battery", new GameEvents.MessageEvent
             {
                 message = $"Знайдено батарейку із зарядом {charge:F1}",
-                data = part
+                data = charge
             });
+
             flashLightScript.RefillCharge(charge);
 
             destroyTimeout = .3f;
@@ -81,24 +82,4 @@ public class BatteryScript : MonoBehaviour
     {
         GameState.UnSubscribe(OnSoundsVolumeTrigger, "EffectsVolume");
     }
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    Debug.Log("Зіткнення");
-    //    if (isRandomCharge) charge = Random.Range(0.3f, 1.0f);
-
-    //    if (other.gameObject.CompareTag("Player"))
-    //    {
-    //        collectSound.Play();
-    //        GameState.TriggerGameEvent("Battery", new GameEvents.MessageEvent
-    //        {
-    //            message = $"Знайдено батарейку із зарядом {charge:F1}",
-    //            data = charge
-    //        });
-
-    //        flashLightScript.RefillCharge(charge);
-
-    //        Destroy(gameObject);
-    //    }
-    //}
 }
